@@ -2,6 +2,9 @@ import requests
 import time
 from datetime import datetime
 import schedule
+import pygame
+import math
+import os
 
 HEARTBEAT_INTERVAL = 600  # 10 minutes
 LOCATION = {
@@ -28,8 +31,41 @@ def get_prayer_times():
         return None
 
 def play_sound(label):
-    # Simulate playing a sound for a prayer time.
+    # Play sound for a prayer time.
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Playing sound for {label}")
+
+    try:
+        source = None
+
+        if label == 'Fajr':
+            source = 'audio/f.mp3'
+        else:
+            source = 'audio/a.mp3'
+
+        if not os.path.exists(source):
+            raise FileNotFoundError(f"Audio file '{source}' does not exist.")
+
+        pygame.init()
+        athan = pygame.mixer.Sound(source)
+        athan_length = math.ceil(athan.get_length() * 1000) + 1000
+
+        athan.play()
+        pygame.time.wait(athan_length) #wait till the athan is finished before closing the programme
+
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Finished playing athan for {label}")
+
+    except FileNotFoundError as e:
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Error: {e}")
+    except pygame.error as e:
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Pygame error: {e}")
+    except Exception as e:
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: An unexpected error occurred: {e}")
+    finally:
+        try:
+            pygame.display.quit()
+            pygame.quit()
+        except pygame.error as e:
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Error during pygame cleanup: {e}")
 
 def schedule_timings(timings):
     # Schedule tasks to play sounds at specified prayer times.
