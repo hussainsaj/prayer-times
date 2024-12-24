@@ -3,11 +3,15 @@ import time
 from datetime import datetime
 import schedule
 
-API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Stoke-on-Trent&country=United%20Kingdom'
 HEARTBEAT_INTERVAL = 600  # 10 minutes
+LOCATION = {
+    'city': 'Stoke-on-Trent',
+    'country': 'United Kingdom'
+}
+API_URL = f"https://api.aladhan.com/v1/timingsByCity?city={LOCATION['city']}&country={LOCATION['country']}"
 
 def get_prayer_times():
-    #Fetch prayer times from the Aladhan API.
+    # Fetch prayer times from the Aladhan API.
     try:
         response = requests.get(API_URL)
         response.raise_for_status()  # Raise an exception for HTTP errors
@@ -24,11 +28,11 @@ def get_prayer_times():
         return None
 
 def play_sound(label):
-    #Simulate playing a sound for a prayer time.
+    # Simulate playing a sound for a prayer time.
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Playing sound for {label}")
 
 def schedule_timings(timings):
-    #Schedule tasks to play sounds at specified prayer times.
+    # Schedule tasks to play sounds at specified prayer times.
     for label, timing in timings.items():
         schedule.every().day.at(timing).do(play_sound, label=label)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: All prayer timings scheduled.")
