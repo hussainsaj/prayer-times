@@ -5,6 +5,7 @@ import schedule
 import pygame
 import math
 import os
+import socket
 
 HEARTBEAT_INTERVAL = 600  # 10 minutes
 LOCATION = {
@@ -12,6 +13,17 @@ LOCATION = {
     'country': 'United Kingdom'
 }
 API_URL = f"https://api.aladhan.com/v1/timingsByCity?city={LOCATION['city']}&country={LOCATION['country']}"
+
+def wait_for_network():
+    # Function to check network connectivity
+    while True:
+        try:
+            socket.create_connection(("8.8.8.8", 53), timeout=5)
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Network connected.")
+            break
+        except OSError:
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Network not available, waiting...")
+            time.sleep(5)
 
 def get_prayer_times():
     # Fetch prayer times from the Aladhan API.
