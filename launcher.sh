@@ -1,15 +1,18 @@
 #!/bin/bash
 
+# Change to the directory where the script is located
+cd "$(dirname "$0")"
+
 # if virtual environment does not exist, create one
-if [ ! -d ".venv" ]; then
-    python3 -m venv .venv
-fi
+#if [ ! -d ".venv" ]; then
+#    python3 -m venv .venv
+#fi
 
 # Activate virtual environment
 source .venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+#pip install -r requirements.txt
 
 # Run the application
 python src/app.py >> logs/app.log 2>&1 &
