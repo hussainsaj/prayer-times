@@ -17,4 +17,4 @@ adhan:
 settings:
   heartbeat_interval: 600
   polling_rate: 60
-  testing: true
+  testing: false
