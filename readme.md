@@ -52,7 +52,7 @@ To add the application to run on boot on a raspberry pi follow these steps:
 
 2. Add the job so it runs the application on boot
    ```
-   @reboot /home/hussain/Desktop/hue/launcher.sh
+   @reboot /home/hussain/Desktop/prayer-times/launcher.sh
    ```
 
 3. Save and give permission to launcher.sh
