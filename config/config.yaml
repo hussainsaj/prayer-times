@@ -1,0 +1,20 @@
+api:
+  url: "https://api.aladhan.com/v1/timingsByCity"
+  parameters:
+    city: "Stoke-on-Trent"
+    country: "United Kingdom"
+    latitudeAdjustmentMethod: 2
+
+adhan:
+  sound_files:
+    Fajr: "audio/f.mp3"
+    Dhuhr: "audio/a.mp3"
+    Asr: "audio/a.mp3"
+    Maghrib: "audio/a.mp3"
+    Isha: "audio/a.mp3"
+    Test: "audio/a.mp3"
+
+settings:
+  heartbeat_interval: 600
+  polling_rate: 60
+  testing: false

@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Activate the virtual environment
-source /home/hussain/Desktop/prayer-times/env/bin/activate
+# if virtual environment does not exist, create one
+if [ ! -d ".venv" ]; then
+    python3 -m venv .venv
+fi
 
-# Change to the prayer-times directory
-cd /home/hussain/Desktop/prayer-times
+# Activate virtual environment
+source .venv/bin/activate
 
-# Run the Python script and log output
-python3 app.py >> /home/hussain/Desktop/prayer-times/logs/app.log 2>&1 &
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python src/app.py
