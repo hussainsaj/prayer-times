@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change to the directory where the script is located
-cd "$(dirname "$0")"
+cd /home/hussain/Desktop/prayer-times
 
 # if virtual environment does not exist, create one
 #if [ ! -d ".venv" ]; then
