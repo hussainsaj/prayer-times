@@ -44,8 +44,8 @@ python src/app.py
 
 The application will wait for network connectivity, fetch prayer times, and schedule the playback of adhan sounds at the appropriate times.
 
-To add the application to run on boot on a raspberry pi follow these steps:
-1. Add the job in the crontab:
+To run the application on boot on a raspberry pi, follow these steps:
+1. Open crontab:
    ```
    sudo crontab -e
    ```
