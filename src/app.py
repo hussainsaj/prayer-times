@@ -9,6 +9,7 @@ import math
 import os
 import socket
 import yaml
+import logging
 
 def load_config():
     with open('config/config.yaml', 'r') as file:
@@ -17,7 +18,7 @@ def load_config():
 # check if the config file has been modified since last checked
 def update_config(config, config_last_modified):
     if (os.path.getmtime('config/config.yaml') > config_last_modified):
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Configuration file has been modified. Reloading configuration.")
+        logging.info("Configuration file has been modified. Reloading configuration.")
         return load_config()
     else:
         return config, config_last_modified
@@ -26,10 +27,10 @@ def wait_for_network():
     while True:
         try:
             socket.create_connection(("8.8.8.8", 53), timeout=5)
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Network connected.")
+            logging.info("Network connected.")
             break
         except OSError:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Network not available, waiting...")
+            logging.error("Network not available, waiting...")
             time.sleep(5)
 
 def get_prayer_times(config):
@@ -64,11 +65,11 @@ def get_prayer_times(config):
         
         return schedule
     except requests.RequestException as e:
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Error fetching prayer times: {e}")
+        logging.exception(f"Error fetching prayer times")
         return None
 
 def play_sound(label, config):
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Playing sound for {label}")
+    logging.info(f"Playing sound for {label}")
 
     try:
         source = config['adhan']['sound_files'][label]
@@ -85,23 +86,31 @@ def play_sound(label, config):
         athan.play()
         pygame.time.wait(athan_length)
         
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Finished playing athan for {label}")
+        logging.info(f"Finished playing athan for {label}")
 
     except FileNotFoundError as e:
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Error: {e}")
+        logging.exception(f"Error")
     except pygame.error as e:
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Pygame error: {e}")
+        logging.exception(f"Pygame error")
     except Exception as e:
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: An unexpected error occurred: {e}")
+        logging.exception(f"An unexpected error occurred")
     finally:
         pygame.quit()
 
 def schedule_timings(timings, config):
     for label, timing in timings.items():
         schedule.every().day.at(timing).do(play_sound, label=label, config=config)
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: All prayer timings scheduled.")
+    logging.info("All prayer timings scheduled.")
 
 def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        filename=f"logs/{datetime.now().strftime('%Y-%m-%d')}.log",
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        filemode='w'
+    )
+
     config, config_last_modified = load_config()
     timings = None
     timings_retrieved = False
@@ -115,21 +124,21 @@ def main():
         config, config_last_modified = update_config(config, config_last_modified)
 
         if time.time() - last_heartbeat >= heartbeat_interval:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Heartbeat - System is running.")
+            logging.info("Heartbeat - System is running.")
             last_heartbeat = time.time()
 
         if not timings_retrieved:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Fetching prayer times.")
+            logging.info("Fetching prayer times.")
             timings = get_prayer_times(config)
             if timings:
-                print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Prayer times successfully retrieved: {timings}")
+                logging.info(f"Prayer times successfully retrieved: {timings}")
                 timings_retrieved = True
             else:
-                print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Failed to retrieve prayer times. Retrying in {config['settings']['polling_rate']} seconds.")
+                logging.error(f"Failed to retrieve prayer times. Retrying in {config['settings']['polling_rate']} seconds.")
                 time.sleep(config['settings']['polling_rate'])
 
         elif not timings_scheduled:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Scheduling prayer times.")
+            logging.info("Scheduling prayer times.")
             schedule_timings(timings, config)
             timings_scheduled = True
 

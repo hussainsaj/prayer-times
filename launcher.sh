@@ -15,4 +15,4 @@ source .venv/bin/activate
 #pip install -r requirements.txt
 
 # Run the application
-python src/app.py >> logs/app.log 2>&1 &
+python src/app.py &
