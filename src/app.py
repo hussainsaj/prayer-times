@@ -12,7 +12,15 @@ import yaml
 
 def load_config():
     with open('config/config.yaml', 'r') as file:
-        return yaml.safe_load(file)
+        return yaml.safe_load(file), os.path.getmtime('config/config.yaml')
+
+# check if the config file has been modified since last checked
+def update_config(config, config_last_modified):
+    if (os.path.getmtime('config/config.yaml') > config_last_modified):
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Configuration file has been modified. Reloading configuration.")
+        return load_config()
+    else:
+        return config, config_last_modified
 
 def wait_for_network():
     while True:
@@ -94,7 +102,7 @@ def schedule_timings(timings, config):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: All prayer timings scheduled.")
 
 def main():
-    config = load_config()
+    config, config_last_modified = load_config()
     timings = None
     timings_retrieved = False
     timings_scheduled = False
@@ -104,7 +112,7 @@ def main():
     wait_for_network()
 
     while True:
-        time.sleep(1)
+        config, config_last_modified = update_config(config, config_last_modified)
 
         if time.time() - last_heartbeat >= heartbeat_interval:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Heartbeat - System is running.")
@@ -126,6 +134,8 @@ def main():
             timings_scheduled = True
 
         schedule.run_pending()
+
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
