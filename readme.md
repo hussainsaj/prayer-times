@@ -9,7 +9,7 @@ prayer-times
 ├── config
 │   └── config.yaml
 ├── src
-│   ├── app.py
+│   └── app.py
 ├── README.md
 ├── launcher.sh
 └── requirements.txt
